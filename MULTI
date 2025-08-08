@@ -1,0 +1,211 @@
+// components/top-nav.tsx
+import React from 'react';
+import { useDispatch } from 'react-redux';
+
+const TopNav = () => {
+  const dispatch = useDispatch();
+
+  const toggleSidebar = () => {
+    dispatch({ type: 'toggle-sidebar' });
+  };
+
+  return (
+    <nav>
+      <button onClick={toggleSidebar}>☰</button>
+      {/* rest of code here */}
+    </nav>
+  );
+};
+
+export default TopNav;
+
+// app/requester/new/page.tsx
+import React, { useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
+
+const NewRequestPage = () => {
+  const [formData, setFormData] = useState({});
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const fd = new FormData(event.target);
+    await apiFetch('/api/requests', { method: 'POST', body: fd });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      {/* form fields here */}
+      <button type="submit">Submit</button>
+    </form>
+  );
+};
+
+export default NewRequestPage;
+
+// app/requester/my/page.tsx
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
+
+const MyRequestsPage = () => {
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    const loadRequests = async () => {
+      const response = await apiFetch(`/api/requests/my?...`);
+      setRequests(response.data);
+    };
+
+    loadRequests();
+  }, []);
+
+  return (
+    <div>
+      {/* display requests here */}
+    </div>
+  );
+};
+
+export default MyRequestsPage;
+
+// app/requests/[id]/page.tsx
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
+
+const RequestPage = ({ params }) => {
+  const [request, setRequest] = useState({});
+
+  useEffect(() => {
+    const loadRequest = async () => {
+      const response = await apiFetch(`/api/requests/${params.id}`);
+      setRequest(response.data);
+    };
+
+    loadRequest();
+  }, [params.id]);
+
+  return (
+    <div>
+      {/* display request details here */}
+    </div>
+  );
+};
+
+export default RequestPage;
+
+// app/buyer/requests/[id]/page.tsx
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
+
+const BuyerRequestPage = ({ params }) => {
+  const [request, setRequest] = useState({});
+
+  useEffect(() => {
+    const loadRequest = async () => {
+      const response = await apiFetch(`/api/requests/${params.id}`);
+      setRequest(response.data);
+    };
+
+    loadRequest();
+  }, [params.id]);
+
+  return (
+    <div>
+      {/* display buyer request details here */}
+    </div>
+  );
+};
+
+export default BuyerRequestPage;
+
+// app/buyer/requests/[id]/generate-po/page.tsx
+import React, { useEffect } from 'react';
+import { apiFetch } from '@/lib/api-client';
+
+const GeneratePOPage = ({ params }) => {
+  useEffect(() => {
+    const generatePO = async () => {
+      const response = await apiFetch(`/api/requests/${params.id}/purchase-orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      console.log(response);
+    };
+
+    generatePO();
+  }, [params.id]);
+
+  return (
+    <div>
+      {/* generate PO UI here */}
+    </div>
+  );
+};
+
+export default GeneratePOPage;
+
+// app/purchase-orders/[id]/page.tsx
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
+
+const PurchaseOrderPage = ({ params }) => {
+  const [purchaseOrder, setPurchaseOrder] = useState({});
+
+  useEffect(() => {
+    const loadPurchaseOrder = async () => {
+      const response = await apiFetch(`/api/purchase-orders/${params.id}`);
+      setPurchaseOrder(response.data);
+    };
+
+    loadPurchaseOrder();
+  }, [params.id]);
+
+  return (
+    <div>
+      {/* display purchase order details here */}
+    </div>
+  );
+};
+
+export default PurchaseOrderPage;
+
+// app/approvals/pending/page.tsx
+import React, { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api-client';
+
+const PendingApprovalsPage = () => {
+  const [approvals, setApprovals] = useState([]);
+
+  useEffect(() => {
+    const loadApprovals = async () => {
+      const response = await apiFetch('/api/approvals/pending');
+      setApprovals(response.data);
+    };
+
+    loadApprovals();
+  }, []);
+
+  const handleApprove = async (id) => {
+    await apiFetch(`/api/purchase-orders/${id}/approve`, { method: 'PUT' });
+  };
+
+  const handleReject = async (id) => {
+    await apiFetch(`/api/purchase-orders/${id}/reject`, { method: 'PUT' });
+  };
+
+  const handleReevaluate = async (id) => {
+    await apiFetch(`/api/purchase-orders/${id}/reevaluate`, { method: 'PUT' });
+  };
+
+  return (
+    <div>
+      {/* display pending approvals here */}
+      <button onClick={() => handleApprove(approval.id)}>Approve</button>
+      <button onClick={() => handleReject(approval.id)}>Reject</button>
+      <button onClick={() => handleReevaluate(approval.id)}>Reevaluate</button>
+    </div>
+  );
+};
+
+export default PendingApprovalsPage;
