@@ -1,0 +1,28 @@
+### Auth
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{ "email":"admin@qarspc.local", "password":"P@ssw0rd!" }
+
+### Providers (admin)
+GET http://localhost:8080/api/providers
+Authorization: Bearer {{accessToken}}
+
+### Create Request (requester)
+POST http://localhost:8080/api/requests
+Authorization: Bearer {{requesterAccessToken}}
+Content-Type: multipart/form-data; boundary=boundary
+
+--boundary
+Content-Disposition: form-data; name="CompanyId"
+1
+--boundary
+Content-Disposition: form-data; name="BuId"
+1
+--boundary
+Content-Disposition: form-data; name="Justification"
+Need laptops
+--boundary--
+
+### Add Quote (buyer)
+POST
